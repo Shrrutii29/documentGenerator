@@ -1,0 +1,79 @@
+
+ ----------------------------------------------------------------------- * * *  Copyright 1996-2024 The NASM Authors - All Rights Reserved
+ *  See the file AUTHORS included with the NASM distribution for
+ *  the specific copyright holders.
+ * *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following
+ *  conditions are met:
+ * *  *Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *  *Redistributions in binary form must reproduce the above
+ *    copyright notice, this list of conditions and the following
+ *    disclaimer in the documentation and/r other materials provided
+ *    with the distribution.
+ * *    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+ *    CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+ *    INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ *    MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ *    CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *    SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ *    NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ *    HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ *    CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ *    OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ *    EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * *----------------------------------------------------------------------- 
+
+ *error.c - error message handling routines for the assembler
+ 
+ Common function body 
+
+ *Strongly discourage warnings without level by require flags on warnings.
+ *This means nasm_warn() is the equivalent of the -f variants of the
+ *other ones.
+ * *This is wrapped in a macro to be able to elide it if the warning is
+ *disabled, hence the extra underscore.
+ 
+
+ *Warning stack management. Note that there is an implicit "push"
+ *after the command line has been parsed, but this particular push
+ *cannot be popped.
+ 
+ Push the warning status onto the warning stack 
+ Pop the warning status off the warning stack 
+!
+		 *warn-stack-empty [on] warning stack empty
+		 *  a \c{[WARNING POP]} directive was executed when
+		 *  the warning stack is empty. This is treated
+		 *  as a \c{[WARNING *ll]} directive.
+		 
+ Call after the command line is parsed, but before the first pass 
+ Call after each pass 
+ Unwind the warning stack. We do NOT delete the last entry! 
+
+ *This is called when processing a -w or -W option, or a warning directive.
+ *Returns ok if the action was successful.
+ * *Special pseudo-warnings:
+ * *other [on] any warning not specifically mentioned above
+ *  specifies any warning not included in any specific warning class.
+ * *all [all] all possible warnings
+ *  is an group alias for \e{all} warning classes.  Thus, \c{-w+all}
+ *  enables all available warnings, and \c{-w-all} disables warnings
+ *  entirely (since NASM 2.13).
+ 
+ else fall through 
+ Just an accidental prefix? 
+
+         *This is inefficient, but it shouldn't matter.
+         *Note: warning_alias[0] is "all".
+         
+ Not a prefix 
+ Not a valid prefix 
+ At least one action taken 
+!
+             *unknown-warning [off] unknown warning in \c{-W}/c{-w} or warning directive
+             *  warns about a \c{-w} or \c{-W} option or a \c{[WARNING]} directive
+             *  that contains an unknown warning name or is otherwise not possible to process.
+             
